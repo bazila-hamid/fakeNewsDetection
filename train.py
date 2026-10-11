@@ -36,14 +36,22 @@ news["text"] = news["text"].apply(clean_text)
 X = news["text"]
 y = news["label"]
 
-# Convert text into TF-IDF vectors
-vectorizer = TfidfVectorizer(stop_words="english", max_features=5000)
-X = vectorizer.fit_transform(X)
-
-# Split dataset
+# Split dataset BEFORE vectorization
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    X, y, test_size=0.2, random_state=42, stratify=y
 )
+
+# Convert text into TF-IDF vectors
+vectorizer = TfidfVectorizer(
+    stop_words="english",
+    max_features=5000
+)
+
+# Learn from training data only
+X_train = vectorizer.fit_transform(X_train)
+
+# Transform test data using the same vocabulary
+X_test = vectorizer.transform(X_test)
 
 # Create Logistic Regression model
 model = LogisticRegression()
